@@ -1,0 +1,19 @@
+{
+  "name": "aman-hosting",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod",
+    "worker": "node worker.js"
+  },
+  "dependencies": {
+    "@vercel/postgres": "^0.10.0",
+    "bcryptjs": "^2.4.3",
+    "express": "^4.19.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
