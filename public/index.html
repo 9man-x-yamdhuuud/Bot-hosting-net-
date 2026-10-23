@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AMAN HOSTING</title>
+<style>
+:root{--bg:#0b0f14;--panel:#111820;--fg:#e6edf3;--muted:#8b949e;--accent:#5b8cff;--danger:#f45b69;--ok:#3fb950;--warn:#ffd479;--border:#1c2732}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--fg);line-height:1.5}
+a{color:var(--accent);text-decoration:none}
+button{font-family:inherit}
+.btn{display:inline-block;padding:9px 16px;border-radius:8px;border:1px solid var(--border);background:#0f1620;color:var(--fg);cursor:pointer;font-size:14px;transition:.15s}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#0b0f14;font-weight:600}
+.btn.danger{background:transparent;border-color:var(--danger);color:var(--danger)}
+.btn.sm{padding:5px 10px;font-size:12px}
+input,select,textarea{width:100%;padding:10px;background:#0a0f14;border:1px solid var(--border);color:var(--fg);border-radius:6px;font-family:inherit;font-size:14px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+label{display:block;margin:12px 0 4px;font-size:13px;color:var(--muted)}
+#auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:radial-gradient(ellipse at top,#12233f,#0b0f14)}
+.auth-box{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:32px}
+.auth-box h1{margin:0 0 4px;font-size:22px}
+.auth-box p.sub{margin:0 0 24px;color:var(--muted);font-size:13px}
+.auth-tabs{display:flex;gap:8px;margin-bottom:8px}
+.auth-tabs button{flex:1;padding:8px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;cursor:pointer;font-size:13px}
+.auth-tabs button.active{background:var(--accent);color:#0b0f14;border-color:var(--accent);font-weight:600}
+.auth-error{color:var(--danger);font-size:13px;margin-top:8px;min-height:18px}
+#app{display:none}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--border);background:var(--panel);position:sticky;top:0;z-index:20}
+.topbar .brand{font-weight:700;font-size:16px;color:var(--fg)}
+.topbar .right{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--muted)}
+.shell{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 53px)}
+.sidebar{background:var(--panel);border-right:1px solid var(--border);padding:16px;overflow-y:auto}
+.sidebar a{display:block;padding:9px 12px;color:var(--fg);border-radius:6px;font-size:14px;margin-bottom:2px}
+.sidebar a:hover{background:#0a0f14}
+.sidebar a.active{background:#0a0f14;color:var(--accent);font-weight:600}
+.sidebar .section-label{padding:16px 12px 6px;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.content{padding:24px;max-width:1200px;overflow-x:auto}
+.page-title{font-size:22px;margin:0 0 20px}
+.muted{color:var(--muted)}
+.grid{display:grid;gap:16px}
+.grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px}
+.card h3{margin:0 0 8px;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+.card .big{font-size:28px;font-weight:700;margin:4px 0}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+.status-running{background:#12341f;color:#7ee2a8}
+.status-stopped{background:#1c2732;color:#8b949e}
+.status-crashed,.status-failed{background:#3a1418;color:#ff9aa6}
+.status-unavailable,.status-created{background:#3a2c14;color:#ffd479}
+.deploy-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;transition:.15s;cursor:pointer}
+.deploy-card:hover{border-color:var(--accent);transform:translateY(-1px)}
+.deploy-card header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.deploy-card header strong{font-size:15px}
+.deploy-card .meta{color:var(--muted);font-size:13px}
+.file-table{width:100%;border-collapse:collapse;font-size:13px}
+.file-table th,.file-table td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border)}
+.file-table th{color:var(--muted);font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:.03em}
+.file-table tr:hover td{background:#0a0f14}
+.file-table td.actions{text-align:right;white-space:nowrap}
+.console{background:#05080c;border:1px solid var(--border);border-radius:8px;padding:12px;font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.6;height:400px;overflow-y:auto;white-space:pre-wrap;color:#c9d1d9}
+.console .stderr{color:#ff9aa6}
+.console .system{color:#7ee2a8}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:20px;overflow-x:auto}
+.tabs button{background:transparent;border:none;color:var(--muted);padding:10px 16px;cursor:pointer;font-size:14px;border-bottom:2px solid transparent;white-space:nowrap}
+.tabs button.active{color:var(--accent);border-bottom-color:var(--accent)}
+.toast-container{position:fixed;top:70px;right:20px;z-index:100;display:flex;flex-direction:column;gap:8px}
+.toast{padding:10px 16px;border-radius:8px;background:var(--panel);border-left:3px solid var(--accent);font-size:13px;box-shadow:0 4px 12px rgba(0,0,0,.4);animation:slideIn .2s}
+.toast.error{border-left-color:var(--danger)}
+.toast.success{border-left-color:var(--ok)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;display:none;align-items:center;justify-content:center;padding:24px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:24px;max-width:520px;width:100%}
+.modal h3{margin:0 0 16px}
+.modal .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.hamburger{display:none;background:transparent;border:1px solid var(--border);color:var(--fg);padding:6px 10px;border-radius:6px;cursor:pointer;font-size:18px}
+.loading{text-align:center;padding:40px;color:var(--muted)}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty-state h2{margin:0 0 8px;color:var(--fg);font-size:18px}
+.log-controls{display:flex;gap:8px;margin-bottom:8px;align-items:center;flex-wrap:wrap}
+.log-controls label{display:flex;align-items:center;gap:4px;margin:0;font-size:12px}
+.env-row{display:flex;gap:8px;padding:8px;border-bottom:1px solid var(--border);align-items:center;font-size:13px}
+.env-row .key{font-family:monospace;flex:1;color:var(--accent)}
+.banner{padding:10px 16px;border-radius:8px;margin-bottom:16px;font-size:13px;display:none}
+.banner.warn{background:#3a2c14;color:#ffd479;border:1px solid #5a4420}
+.banner.show{display:block}
+@media(max-width:768px){.shell{grid-template-columns:1fr}.sidebar{position:fixed;left:-240px;top:53px;bottom:0;width:220px;transition:left .2s;z-index:30}.sidebar.open{left:0}.hamburger{display:inline-block}.content{padding:16px}.grid.cols-3,.grid.cols-2{grid-template-columns:1fr}.toast-container{left:16px;right:16px;top:auto;bottom:16px}}
+</style>
+</head>
+<body>
+
+<div id="auth-screen">
+  <div class="auth-box">
+    <h1>AMAN HOSTING</h1>
+    <p class="sub">Deploy Python &amp; Node apps. Panel on Vercel, execution on your worker.</p>
+    <div class="auth-tabs">
+      <button id="tab-login" class="active" onclick="showTab('login')">Login</button>
+      <button id="tab-register" onclick="showTab('register')">Register</button>
+    </div>
+    <form id="login-form" onsubmit="doLogin(event)">
+      <label>Email</label><input type="email" name="email" required autocomplete="email">
+      <label>Password</label><input type="password" name="password" required autocomplete="current-password">
+      <button type="submit" class="btn primary" style="width:100%;margin-top:16px">Sign in</button>
+      <div class="auth-error" id="login-error"></div>
+    </form>
+    <form id="register-form" style="display:none" onsubmit="doRegister(event)">
+      <label>Display name</label><input name="display_name" autocomplete="name">
+      <label>Email</label><input type="email" name="email" required autocomplete="email">
+      <label>Password (min 8)</label><input type="password" name="password" required minlength="8" autocomplete="new-password">
+      <button type="submit" class="btn primary" style="width:100%;margin-top:16px">Create account</button>
+      <div class="auth-error" id="register-error"></div>
+    </form>
+  </div>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="hamburger" onclick="toggleSidebar()">&#9776;</button>
+      <span class="brand">AMAN HOSTING</span>
+    </div>
+    <div class="right"><span id="user-label">&mdash;</span><button class="btn sm" onclick="doLogout()">Logout</button></div>
+  </div>
+  <div class="shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="section-label">Main</div>
+      <a href="#" data-nav="overview" class="active" onclick="event.preventDefault();nav('overview')">Overview</a>
+      <a href="#" data-nav="deployments" onclick="event.preventDefault();nav('deployments')">My Deployments</a>
+      <a href="#" data-nav="create" onclick="event.preventDefault();nav('create')">Create Deployment</a>
+      <div class="section-label">Admin</div>
+      <a href="#" data-nav="admin" id="admin-link" style="display:none" onclick="event.preventDefault();nav('admin')">Admin Panel</a>
+      <div class="section-label">Account</div>
+      <a href="#" data-nav="account" onclick="event.preventDefault();nav('account')">Account Settings</a>
+    </aside>
+    <main class="content" id="content"><div class="loading"><div class="spinner"></div></div></main>
+  </div>
+</div>
+<div class="toast-container" id="toasts"></div>
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal" id="modal-content"></div></div>
+
+<script>
+function toast(msg, kind='info'){const el=document.createElement('div');el.className='toast '+kind;el.textContent=String(msg);document.getElementById('toasts').appendChild(el);setTimeout(()=>el.remove(),4000)}
+function openModal(html){document.getElementById('modal-content').innerHTML=html;document.getElementById('modal-overlay').classList.add('show')}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('show')}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function fmtBytes(b){if(!b)return'0 B';const u=['B','KB','MB','GB'];let i=0,n=Number(b);while(n>=1024&&i<u.length-1){n/=1024;i++}return n.toFixed(1)+' '+u[i]}
+function fmtDate(iso){if(!iso)return'—';try{return new Date(iso.includes('Z')?iso:iso+'Z').toLocaleString()}catch(e){return iso}}
+async function api(path,opts={}){const r=await fetch(path,{credentials:'same-origin',headers:{'Content-Type':'application/json',...(opts.headers||{})},...opts});let data=null;try{data=await r.json()}catch(e){}if(!r.ok)throw{status:r.status,data:data||{}};return data}
+function showTab(t){document.getElementById('tab-login').classList.toggle('active',t==='login');document.getElementById('tab-register').classList.toggle('active',t==='register');document.getElementById('login-form').style.display=t==='login'?'block':'none';document.getElementById('register-form').style.display=t==='register'?'block':'none'}
+async function doLogin(e){e.preventDefault();const fd=new FormData(e.target);try{await api('/api/auth/login',{method:'POST',body:JSON.stringify(Object.fromEntries(fd))});await enterApp()}catch(err){document.getElementById('login-error').textContent=(err.data&&err.data.error)||'Login failed.'}}
+async function doRegister(e){e.preventDefault();const fd=new FormData(e.target);try{await api('/api/auth/register',{method:'POST',body:JSON.stringify(Object.fromEntries(fd))});await enterApp()}catch(err){document.getElementById('register-error').textContent=(err.data&&err.data.error)||'Registration failed.'}}
+async function doLogout(){try{await api('/api/auth/logout',{method:'POST'})}catch(e){}window.location.reload()}
+const state={user:null,deployments:[],currentDepId:null,execAvailable:false};
+async function enterApp(){try{const me=await api('/api/auth/me');state.user=me.user;state.execAvailable=me.execution_available}catch(e){return}document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='block';document.getElementById('user-label').textContent=state.user.display_name+' ('+state.user.role+')';if(state.user.role==='admin')document.getElementById('admin-link').style.display='block';nav('overview')}
+const NAV={overview:renderOverview,deployments:renderDeployments,create:renderCreate,account:renderAccount,admin:renderAdmin};
+function nav(name){if(window.consoleTimer){clearInterval(window.consoleTimer);window.consoleTimer=null}document.querySelectorAll('.sidebar a[data-nav]').forEach(a=>a.classList.toggle('active',a.dataset.nav===name));document.getElementById('sidebar').classList.remove('open');const fn=NAV[name]||renderOverview;document.getElementById('content').innerHTML='<div class="loading"><div class="spinner"></div></div>';Promise.resolve(fn()).catch(err=>{const msg=(err&&err.data&&err.data.error)||(err&&err.message)||'Failed to load';document.getElementById('content').innerHTML='<div class="empty-state"><h2>Error</h2><p class="muted">'+esc(msg)+'</p></div>'})}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open')}
+function execBanner(){return state.execAvailable?'':'<div class="banner warn show">⚠️ Execution service not configured. Deployments can be created and files uploaded, but <strong>start/stop will fail</strong>. Configure <code>EXECUTION_SERVICE_URL</code> on your Vercel project.</div>'}
+async function renderOverview(){const resp=await api('/api/deployments');state.deployments=resp.deployments;const lim=resp.limits;const running=resp.deployments.filter(d=>d.status==='running').length;const recent=resp.deployments.slice(0,5);document.getElementById('content').innerHTML='<h1 class="page-title">Overview</h1>'+execBanner()+'<div class="grid cols-3"><div class="card"><h3>Total deployments</h3><div class="big">'+resp.deployments.length+'</div><div class="muted">Limit: '+lim.max_deployments+'</div></div><div class="card"><h3>Running</h3><div class="big" style="color:var(--ok)">'+running+'</div></div><div class="card"><h3>Execution</h3><div class="big" style="font-size:16px;color:'+(state.execAvailable?'var(--ok)':'var(--warn)')+'">'+(state.execAvailable?'Connected':'Unavailable')+'</div></div></div><h2 class="page-title" style="margin-top:32px;font-size:16px">Recent deployments</h2><div class="grid cols-2">'+(recent.length?recent.map(d=>deployCard(d)).join(''):'<div class="empty-state"><h2>No deployments yet</h2><p class="muted">Create your first deployment.</p><button class="btn primary" onclick="nav(\'create\')">Create deployment</button></div>')+'</div>'}
+function deployCard(d){return'<div class="deploy-card" onclick="openDeployment('+d.id+')"><header><strong>'+esc(d.name)+'</strong><span class="badge status-'+esc(d.status)+'">'+esc(d.status)+'</span></header><div class="meta">'+esc(d.runtime)+' · '+esc(d.entrypoint||'no entrypoint')+'</div><div class="meta" style="margin-top:6px;font-size:12px">Created '+fmtDate(d.created_at)+'</div></div>'}
+async function renderDeployments(){const resp=await api('/api/deployments');state.deployments=resp.deployments;document.getElementById('content').innerHTML=execBanner()+'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h1 class="page-title" style="margin:0">My Deployments</h1><button class="btn primary" onclick="nav(\'create\')">+ New</button></div><div class="grid cols-2">'+(resp.deployments.length?resp.deployments.map(d=>deployCard(d)).join(''):'<div class="empty-state"><h2>Empty</h2><p class="muted">No deployments yet.</p></div>')+'</div>'}
+async function renderCreate(){document.getElementById('content').innerHTML=execBanner()+'<h1 class="page-title">Create Deployment</h1><div class="card" style="max-width:600px"><form id="create-form" onsubmit="doCreate(event)"><label>Project name</label><input name="name" required maxlength="80" placeholder="my-bot"><label>Runtime</label><select name="runtime" required onchange="updateDefaultEntry(this.value)"><option value="python">Python 3</option><option value="node">Node.js</option><option value="static">Static site</option></select><label>Entrypoint (main file)</label><input name="entrypoint" id="entrypoint" required placeholder="main.py" value="main.py"><p class="muted" style="font-size:12px;margin-top:4px">Upload files after creating.</p><button class="btn primary" type="submit" style="margin-top:16px">Create</button></form></div>'}
+function updateDefaultEntry(runtime){const map={python:'main.py',node:'index.js',static:'index.html'};document.getElementById('entrypoint').value=map[runtime]||'main.py'}
+async function doCreate(e){e.preventDefault();const fd=new FormData(e.target);try{const r=await api('/api/deployments',{method:'POST',body:JSON.stringify(Object.fromEntries(fd))});toast('Deployment created','success');openDeployment(r.deployment.id)}catch(err){toast((err.data&&err.data.error)||'Create failed','error')}}
+async function openDeployment(id){state.currentDepId=id;document.getElementById('content').innerHTML='<div class="loading"><div class="spinner"></div></div>';const resp=await api('/api/deployments/'+id);const d=resp.deployment;document.getElementById('content').innerHTML=execBanner()+'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px"><div><div class="muted" style="font-size:13px">Deployment #'+d.id+'</div><h1 class="page-title" style="margin:4px 0">'+esc(d.name)+' <span class="badge status-'+esc(d.status)+'">'+esc(d.status)+'</span></h1></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" onclick="depStart('+d.id+')">Start</button><button class="btn" onclick="depStop('+d.id+')">Stop</button><button class="btn" onclick="depRestart('+d.id+')">Restart</button><button class="btn danger" onclick="depDelete('+d.id+')">Delete</button></div></div><div class="tabs" id="dep-tabs"><button class="active" onclick="depTab(\'files\')">Files</button><button onclick="depTab(\'console\')">Console</button><button onclick="depTab(\'env\')">Environment</button><button onclick="depTab(\'metrics\')">Metrics</button><button onclick="depTab(\'settings\')">Settings</button></div><div id="dep-tab-content"></div>';depTab('files')}
+function depTab(name){if(window.consoleTimer){clearInterval(window.consoleTimer);window.consoleTimer=null}const labels=['files','console','env','metrics','settings'];document.querySelectorAll('#dep-tabs button').forEach((b,i)=>b.classList.toggle('active',labels[i]===name));const el=document.getElementById('dep-tab-content');if(name==='files')renderFilesTab(el);else if(name==='console')renderConsoleTab(el);else if(name==='env')renderEnvTab(el);else if(name==='metrics')renderMetricsTab(el);else if(name==='settings')renderSettingsTab(el)}
+async function depStart(id){try{const r=await api('/api/deployments/'+id+'/start',{method:'POST'});toast(r.message||'Started',r.ok?'success':'error');openDeployment(id)}catch(err){toast((err.data&&err.data.error)||'Start failed','error')}}
+async function depStop(id){try{const r=await api('/api/deployments/'+id+'/stop',{method:'POST'});toast(r.message||'Stopped','success');openDeployment(id)}catch(err){toast((err.data&&err.data.error)||'Stop failed','error')}}
+async function depRestart(id){try{const r=await api('/api/deployments/'+id+'/restart',{method:'POST'});toast(r.message||'Restarted',r.ok?'success':'error');openDeployment(id)}catch(err){toast((err.data&&err.data.error)||'Restart failed','error')}}
+function depDelete(id){openModal('<h3>Delete deployment?</h3><p class="muted">This permanently removes all files and configuration.</p><div class="actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn danger" onclick="confirmDelete('+id+')">Delete</button></div>')}
+async function confirmDelete(id){try{await api('/api/deployments/'+id,{method:'DELETE'});closeModal();toast('Deleted','success');nav('deployments')}catch(err){toast((err.data&&err.data.error)||'Delete failed','error')}}
+let currentDir='';
+async function renderFilesTab(el){currentDir='';el.innerHTML='<div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap"><input type="file" id="file-upload" style="flex:1;min-width:200px"><button class="btn primary" onclick="uploadFile()">Upload</button></div><div class="card" style="padding:0;overflow:auto"><table class="file-table" id="file-table"><thead><tr><th>Name</th><th>Size</th><th>Modified</th><th></th></tr></thead><tbody><tr><td colspan="4" class="loading"><div class="spinner"></div></td></tr></tbody></table></div>';refreshFiles()}
+async function refreshFiles(){try{const r=await api('/api/deployments/'+state.currentDepId+'/files?dir='+encodeURIComponent(currentDir));const tbody=document.querySelector('#file-table tbody');if(!tbody)return;let rows='';if(currentDir){const up=currentDir.split('/').slice(0,-1).join('/');rows+='<tr><td><a href="#" onclick="event.preventDefault();setDir(\''+up.replace(/'/g,"\\'")+'\')">..</a></td><td colspan="3"></td></tr>'}if(!r.items.length)rows+='<tr><td colspan="4" class="muted" style="text-align:center;padding:20px">Empty</td></tr>';for(const it of r.items){const path=currentDir?currentDir+'/'+it.name:it.name;const pathEsc=path.replace(/'/g,"\\'");if(it.is_dir){rows+='<tr><td>&#128193; <a href="#" onclick="event.preventDefault();setDir(\''+pathEsc+'\')">'+esc(it.name)+'</a></td><td>—</td><td>'+fmtDate(it.modified)+'</td><td class="actions"><button class="btn sm danger" onclick="deleteFile(\''+pathEsc+'\')">Del</button></td></tr>'}else{rows+='<tr><td>&#128196; '+esc(it.name)+'</td><td>'+fmtBytes(it.size)+'</td><td>'+fmtDate(it.modified)+'</td><td class="actions"><button class="btn sm" onclick="editFile(\''+pathEsc+'\')">Edit</button> <button class="btn sm" onclick="window.location=\'/api/deployments/'+state.currentDepId+'/files/download?path='+encodeURIComponent(path)+'\'">Download</button> <button class="btn sm danger" onclick="deleteFile(\''+pathEsc+'\')">Del</button></td></tr>'}}tbody.innerHTML=rows}catch(err){toast('Files failed to load','error')}}
+function setDir(d){currentDir=d;refreshFiles()}
+async function uploadFile(){const f=document.getElementById('file-upload').files[0];if(!f)return toast('Choose a file first','error');const fd=new FormData();fd.append('file',f);try{const r=await fetch('/api/deployments/'+state.currentDepId+'/files',{method:'POST',body:fd,credentials:'same-origin'});const d=await r.json();if(!r.ok)throw d;toast('Uploaded','success');refreshFiles()}catch(err){toast((err&&err.error)||'Upload failed','error')}}
+function deleteFile(path){openModal('<h3>Delete '+esc(path)+'?</h3><div class="actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn danger" onclick="confirmDeleteFile(\''+path.replace(/'/g,"\\'")+'\')">Delete</button></div>')}
+async function confirmDeleteFile(path){try{await api('/api/deployments/'+state.currentDepId+'/files/delete',{method:'POST',body:JSON.stringify({path})});closeModal();toast('Deleted','success');refreshFiles()}catch(err){toast((err.data&&err.data.error)||'Failed','error')}}
+async function editFile(path){try{const r=await api('/api/deployments/'+state.currentDepId+'/files/read?path='+encodeURIComponent(path));openModal('<h3>'+esc(path)+'</h3><textarea id="edit-content" style="height:340px;font-family:monospace;font-size:13px">'+esc(r.content)+'</textarea><div class="actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn primary" onclick="saveFile(\''+path.replace(/'/g,"\\'")+'\')">Save</button></div>')}catch(err){toast((err.data&&err.data.error)||'Cannot read file','error')}}
+async function saveFile(path){const content=document.getElementById('edit-content').value;try{await api('/api/deployments/'+state.currentDepId+'/files/write',{method:'POST',body:JSON.stringify({path,content})});closeModal();toast('Saved','success');refreshFiles()}catch(err){toast((err.data&&err.data.error)||'Save failed','error')}}
+let lastLogId=0;
+async function renderConsoleTab(el){lastLogId=0;if(window.consoleTimer){clearInterval(window.consoleTimer);window.consoleTimer=null}el.innerHTML='<div class="log-controls"><label><input type="checkbox" id="autoscroll" checked style="width:auto"> Auto-scroll</label><button class="btn sm" onclick="refreshLogs(true)">Refresh</button><button class="btn sm" onclick="downloadLogs()">Download</button><span class="muted" style="font-size:12px;margin-left:auto">Polling every 2s</span></div><div class="console" id="console-output"></div>';await refreshLogs(false);window.consoleTimer=setInterval(()=>refreshLogs(false),2000)}
+async function refreshLogs(reset){if(reset)lastLogId=0;try{const r=await api('/api/deployments/'+state.currentDepId+'/logs?after='+lastLogId);const el=document.getElementById('console-output');if(!el)return;if(reset)el.innerHTML='';for(const log of r.logs){lastLogId=Math.max(lastLogId,log.id);const div=document.createElement('div');div.className=log.stream;div.textContent='['+fmtDate(log.created_at)+'] ['+log.stream+'] '+log.line;el.appendChild(div)}const as=document.getElementById('autoscroll');if(as&&as.checked)el.scrollTop=el.scrollHeight}catch(err){}}
+async function downloadLogs(){try{const r=await api('/api/deployments/'+state.currentDepId+'/logs?after=0');const text=r.logs.map(l=>'['+l.created_at+'] ['+l.stream+'] '+l.line).join('\n');const blob=new Blob([text],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='deployment-'+state.currentDepId+'-logs.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}catch(err){toast('Download failed','error')}}
+async function renderEnvTab(el){try{const r=await api('/api/deployments/'+state.currentDepId+'/env');let rows=r.keys.length?r.keys.map(k=>'<div class="env-row"><span class="key">'+esc(k)+'</span><span class="muted" style="flex:1">&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span><button class="btn sm danger" onclick="deleteEnv(\''+esc(k)+'\')">Delete</button></div>').join(''):'<div class="muted" style="padding:16px">No environment variables set.</div>';el.innerHTML='<div class="card"><h3>Environment Variables</h3><p class="muted" style="font-size:13px">Values hidden. Setting an existing key overwrites it.</p><div style="margin-top:12px">'+rows+'</div><div style="margin-top:16px;display:grid;grid-template-columns:1fr 2fr auto;gap:8px;align-items:end"><div><label>Key</label><input id="env-key" placeholder="API_KEY"></div><div><label>Value</label><input id="env-value" type="password" placeholder="secret"></div><button class="btn primary" onclick="addEnv()">Add</button></div></div>'}catch(err){el.innerHTML='<p class="muted">Failed to load.</p>'}}
+async function addEnv(){const key=document.getElementById('env-key').value.trim();const value=document.getElementById('env-value').value;if(!key)return toast('Key required','error');try{await api('/api/deployments/'+state.currentDepId+'/env',{method:'POST',body:JSON.stringify({key,value})});toast('Saved','success');depTab('env')}catch(err){toast((err.data&&err.data.error)||'Failed','error')}}
+async function deleteEnv(key){try{await api('/api/deployments/'+state.currentDepId+'/env/'+encodeURIComponent(key),{method:'DELETE'});toast('Deleted','success');depTab('env')}catch(err){toast((err.data&&err.data.error)||'Failed','error')}}
+async function renderMetricsTab(el){el.innerHTML='<div class="loading"><div class="spinner"></div></div>';const r=await api('/api/deployments/'+state.currentDepId+'/metrics');const m=r.metrics;const cpuText=(m.cpu!=null)?m.cpu.toFixed(1)+'%':'Unavailable';const rssText=(m.rss!=null)?fmtBytes(m.rss):'Unavailable';el.innerHTML='<div class="grid cols-2"><div class="card"><h3>Status</h3><div class="big">'+(r.running?'Running':'Stopped')+'</div></div><div class="card"><h3>CPU</h3><div class="big">'+cpuText+'</div></div><div class="card"><h3>Memory (RSS)</h3><div class="big">'+rssText+'</div><div class="muted">Limit: '+(m.memory_limit_mb||'—')+' MB</div></div><div class="card"><h3>Storage</h3><div class="big" style="font-size:16px">'+(m.storage_used!=null?fmtBytes(m.storage_used):'Unavailable')+' / '+(m.storage_limit_mb||'—')+' MB</div></div><div class="card"><h3>Restart count</h3><div class="big">'+(m.restart_count||0)+'</div></div><div class="card"><h3>Last exit code</h3><div class="big">'+(m.exit_code!=null?m.exit_code:'—')+'</div></div></div>'+(m.last_error?'<div class="card" style="margin-top:16px;border-color:var(--danger)"><h3>Last error</h3><div>'+esc(m.last_error)+'</div></div>':'')+'<p class="muted" style="margin-top:16px;font-size:12px">Metrics come from the execution service. Unavailable means not running or not connected.</p>'}
+async function renderSettingsTab(el){const r=await api('/api/deployments/'+state.currentDepId);const d=r.deployment;el.innerHTML='<div class="card" style="max-width:600px"><h3>Startup Configuration</h3><form onsubmit="saveSettings(event)"><label>Project name</label><input name="name" value="'+esc(d.name)+'" required><label>Entrypoint</label><input name="entrypoint" value="'+esc(d.entrypoint)+'" required><label>Runtime</label><input value="'+esc(d.runtime)+'" disabled><button class="btn primary" type="submit" style="margin-top:16px">Save</button></form></div><div class="card" style="max-width:600px;margin-top:16px;border-color:var(--danger)"><h3>Danger Zone</h3><button class="btn danger" onclick="depDelete('+d.id+')">Delete deployment</button></div>'}
+async function saveSettings(e){e.preventDefault();const fd=new FormData(e.target);try{await api('/api/deployments/'+state.currentDepId,{method:'PATCH',body:JSON.stringify(Object.fromEntries(fd))});toast('Saved','success')}catch(err){toast((err.data&&err.data.error)||'Failed','error')}}
+async function renderAccount(){document.getElementById('content').innerHTML='<h1 class="page-title">Account Settings</h1><div class="card" style="max-width:600px"><h3>Profile</h3><p><strong>Email:</strong> '+esc(state.user.email)+'</p><p><strong>Display name:</strong> '+esc(state.user.display_name||'—')+'</p><p><strong>Role:</strong> '+esc(state.user.role)+'</p><p><strong>Plan:</strong> '+esc(state.user.plan)+'</p><p><strong>Storage used:</strong> '+fmtBytes(state.user.storage_used_bytes||0)+'</p></div>'}
+async function renderAdmin(){const ur=await api('/api/admin/users');const h=await api('/api/admin/health');const users=ur.users;let rows=users.map(u=>'<tr><td>'+u.id+'</td><td>'+esc(u.email)+'</td><td>'+esc(u.display_name||'—')+'</td><td>'+esc(u.role)+'</td><td>'+esc(u.plan)+'</td><td>'+(u.is_active?'Yes':'No')+'</td><td><button class="btn sm" onclick="toggleUser('+u.id+','+(u.is_active?0:1)+')">'+(u.is_active?'Suspend':'Activate')+'</button></td></tr>').join('');document.getElementById('content').innerHTML='<h1 class="page-title">Admin Panel</h1><div class="grid cols-3"><div class="card"><h3>Users</h3><div class="big">'+users.length+'</div></div><div class="card"><h3>Deployments</h3><div class="big">'+h.deployment_count+'</div></div><div class="card"><h3>Execution</h3><div class="big" style="font-size:16px;color:'+(h.execution_available?'var(--ok)':'var(--warn)')+'">'+(h.execution_available?'Connected':'Unavailable')+'</div></div><div class="card"><h3>Maintenance</h3><div class="big" style="font-size:16px;color:'+(h.maintenance?'var(--warn)':'var(--ok)')+'">'+(h.maintenance?'ON':'OFF')+'</div><button class="btn sm" style="margin-top:8px" onclick="toggleMaintenance('+(h.maintenance?0:1)+')">Toggle</button></div></div><h2 class="page-title" style="margin-top:32px;font-size:16px">Users</h2><div class="card" style="padding:0;overflow:auto"><table class="file-table"><thead><tr><th>ID</th><th>Email</th><th>Name</th><th>Role</th><th>Plan</th><th>Active</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>'}
+async function toggleMaintenance(enabled){try{await api('/api/admin/maintenance',{method:'POST',body:JSON.stringify({enabled:!!enabled})});toast('Updated','success');renderAdmin()}catch(err){toast((err.data&&err.data.error)||'Failed','error')}}
+async function toggleUser(id,active){try{await api('/api/admin/users/'+id+'/active',{method:'POST',body:JSON.stringify({active:!!active})});toast('Updated','success');renderAdmin()}catch(err){toast((err.data&&err.data.error)||'Failed','error')}}
+(async function boot(){try{const me=await api('/api/auth/me');state.user=me.user;state.execAvailable=me.execution_available;await enterApp()}catch(e){document.getElementById('auth-screen').style.display='flex'}})();
+</script>
+</body>
+</html>
